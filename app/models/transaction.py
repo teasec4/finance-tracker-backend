@@ -6,10 +6,11 @@ class Transaction(Base):
     __tablename__ = "transactions"
 
     id = Column(Integer, primary_key=True, index=True)
-    amount = Column(Float, nullable=False)
+    amount = Column(String, nullable=False) # crypted amount
     description = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     category_id = Column(Integer, ForeignKey("categories.id"))
+    type = Column(String, nullable=False)  # Добавляем поле type
 
     user = relationship("User")
     category = relationship("Category")

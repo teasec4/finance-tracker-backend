@@ -5,9 +5,17 @@ from app.api.v1 import category as category_router
 from app.api.v1 import transaction as transaction_router
 from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(user_router.router, prefix="/api/v1/user")
 app.include_router(category_router.router, prefix="/api/v1/category")
 app.include_router(transaction_router.router, prefix="/api/v1/transaction")
