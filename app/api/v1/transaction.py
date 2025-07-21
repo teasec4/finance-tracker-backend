@@ -15,6 +15,9 @@ def create_new_transaction(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    print(f"create_transaction: Received transaction: {transaction.dict()}")
+    print(f"create_transaction: Current user ID: {current_user.id}")
+    
     return create_transaction(db, transaction, current_user.id)
 
 @router.get("/", response_model=List[TransactionRead])

@@ -4,6 +4,7 @@ from app.schemas.transaction import TransactionCreate, TransactionRead
 import os
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
+from datetime import date
 
 load_dotenv()
 
@@ -14,7 +15,7 @@ def encrypt_amount(amount: float) -> str:
     return fernet.encrypt(str(amount).encode()).decode()
 
 def decrypt_amount(encrypted_amount: str) -> float:
-    return float(fernet.decrypt(encrypt_amount.encode()).decode())
+    return float(fernet.decrypt(encrypted_amount.encode()).decode())
 
 def create_transaction(db: Session, transaction: TransactionCreate, user_id: int):
     encrypted_amount = encrypt_amount(transaction.amount)
@@ -23,7 +24,8 @@ def create_transaction(db: Session, transaction: TransactionCreate, user_id: int
         description=transaction.description,
         category_id=transaction.category_id,
         user_id=user_id,
-        type=transaction.type
+        type=transaction.type,
+        date=transaction.date or date.today()
     )
     db.add(db_transaction)
     db.commit()
@@ -49,8 +51,11 @@ def update_transaction(db: Session, transaction_id: int, user_id: int, transacti
     if not db_transaction:
         return None
     db_transaction.amount = encrypt_amount(transaction_data.amount)
-    db_transaction.description = encrypt_amount(transaction_data.description)
-    db_transaction.category_id = encrypt_amount(transaction_data.category_id)
+    db_transaction.description = transaction_data.description
+    db_transaction.category_id = transaction_data.category_id
+    db_transaction.type = transaction_data.type
+    db_transaction.date = transaction_data.date or db_transaction.date
+    
     db.commit()
     db.refresh(db_transaction)
     db_transaction.amount = decrypt_amount(db_transaction.amount)

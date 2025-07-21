@@ -19,7 +19,7 @@ def create_user(db: Session, user: UserCreate):
     # копируем глобальные категории
     global_categories = db.query(Category).filter(Category.user_id == None).all()
     for cat in global_categories:
-        new_cat = Category(name=cat.name, user_id=db_user.id)
+        new_cat = Category(name=cat.name, type=cat.type, user_id=db_user.id)
         db.add(new_cat)
     db.commit()
 

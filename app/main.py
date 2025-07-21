@@ -9,6 +9,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    body = await request.body()
+    print(f"Request body: {body.decode()}")
+
+    # "восстанавливаем" тело запроса для дальнейшей обработки
+    async def receive():
+        return {"type": "http.request", "body": body}
+
+    response = await call_next(Request(request.scope, receive))
+    return response
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
